@@ -5,7 +5,6 @@ A basic weather app that uses the Weatherbit API
 The following features were implemented:
 - User can search weather by city name
 - Weather forecast includes temperature, the day name, a weather icon, and the description of the weather 
-- User stays logged in across restarts
 - Alert Pop Ups for an incorrect city search
 
 ## Video Walkthrough
