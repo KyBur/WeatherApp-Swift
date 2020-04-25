@@ -27,6 +27,9 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @IBAction func onSubmit(_ sender: Any) {
         let city = cityTextField.text!
+        if(city.isEmpty){
+            self.alertView(error: "Enter a city")
+        }
         //For cities with multiword names, replace space with '_'
         let urlCity = city.replacingOccurrences(of: " ", with: "_")
         cityTextField.text = ""
@@ -34,7 +37,7 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         //weatherbit documentation: https://www.weatherbit.io/api/weather-forecast-16-day
         //weatherbit API Key
-        let apiKey = "176c9480c3dc481ab292654658b4f883"
+        let apiKey = "176c9480c3dc481ab292654658b4f88355"
         //Construct API url with catch for invalid input
         if let url = URL(string: "https://api.weatherbit.io/v2.0/forecast/daily?city=\(urlCity)&key=\(apiKey)") {
             //API Call
@@ -49,7 +52,9 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
                         let dataDictionary = try JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
                         //Grabs data array from API if it is valid, otherwise displays an error popup
                         guard let APIdata = dataDictionary["data"] else {
-                            self.alertView()
+                            if let errorResults = dataDictionary["error"] as? String {
+                                self.alertView(error: "Error: \(errorResults)")
+                            }
                             print("API data not found (city field left blank)")
                             return
                         }
@@ -63,7 +68,7 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
                         
                     catch (_) {
                         //City name is not valid/has no data from API
-                        self.alertView()
+                        self.alertView(error: "Please enter a valid city")
                         print("Invalid City Name")
                     }
                 }
@@ -72,15 +77,15 @@ class WeatherViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
         else{
             //Case where URL contains invalid items such as emojis
-            alertView()
+            alertView(error: "Please enter valid characters for city")
             print("Invalid URL")
         }
         
         
     }
-    func alertView(){
+    func alertView(error: String){
         //Creates and displays error message for incorrect input
-        let alert = UIAlertController(title: "Invalid City Input", message: "Please enter a valid city name", preferredStyle: UIAlertController.Style.alert)
+        let alert = UIAlertController(title: "Error", message: error, preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
